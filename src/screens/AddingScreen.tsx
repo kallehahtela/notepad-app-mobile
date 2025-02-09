@@ -1,13 +1,79 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Alert, TouchableWithoutFeedback, Keyboard } from "react-native";
+import SelfButton from "../components/SelfButton";
+import NoteInput from "../components/NoteInput";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation/StackNavigator";
 
-const AddignScreen = () => {
+type Props = NativeStackScreenProps<RootStackParamList,'AddingScreen'>;
+
+const AddignScreen = ({ route, navigation }: Props) => {
+    const [notes, setNotes] = useState('');
+
+    const saveNotesData = async (notes: string) => {
+        try {
+            const previousNotes = await AsyncStorage.getItem('notes');
+            const notes = previousNotes ? JSON.parse(previousNotes) : [];
+
+            const newNote = {
+                id: Date.now(),
+                notes,
+                createdAt: new Date().toString(),
+            };
+
+            notes.push(newNote);
+            await AsyncStorage.setItem('notes', JSON.stringify('notes'));
+        } catch (error) {
+            // notes saving error
+        }
+    };
+
+    const handleAddNotes = async () => {
+        if (!notes.trim()) {
+            Alert.alert('You need to add text in the notes in order to add them!')
+            return;
+        }
+
+        const newNote = {
+            id: Date.now().toString(),
+            notes,
+            createdAt: new Date().toString(),
+        };
+
+        try {
+            const previousNotes = await AsyncStorage.getItem('notes');
+            const notes = previousNotes ?  JSON.parse(previousNotes) : [];
+            notes.push(newNote);
+            await AsyncStorage.setItem('notes', JSON.stringify(notes));
+
+            navigation.navigate('AddingScreen', { newNote })
+        } catch (error) {
+            // error saving note
+        }
+    };
+
     return (
-        <View style={styles.outerContainer}>
-            <Text>
-                Here you can add your notes!
-            </Text>
-        </View>
+        <TouchableWithoutFeedback
+            onPress={Keyboard.dismiss}
+            accessible={false}
+        >
+            <View style={styles.outerContainer}>
+                {/* Custom TextInput with props */}
+                <NoteInput 
+                    placeholder="Enter your desired notes here..."
+                    placeHolderTextColor="#000"
+                    multiline={true}
+                    numberOfLines={10}
+                />
+
+                {/* Custom button with types */}
+                <SelfButton 
+                    title="Add a Note"
+                    onPress={handleAddNotes}
+                />
+            </View>
+        </TouchableWithoutFeedback>
     );
 }
 
@@ -18,5 +84,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#fff'
     }
 });

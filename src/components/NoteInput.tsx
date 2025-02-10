@@ -5,21 +5,17 @@ interface Props {
     placeholder: string;
     placeHolderTextColor: string;
     multiline: boolean;
-    numberOfLines: number;
+    value: string;
+    onChangeText: (text: string) => void;
 };
 
 const NoteInput: React.FC<Props> = ({ 
     placeholder, 
     placeHolderTextColor,
     multiline,
-    numberOfLines,
+    onChangeText,
+    value,
  }) => {
-
-    const [text, setText] = useState('');
-
-    const onChangeText = () => {
-        setText(text);
-    };
 
     return (
         <View style={styles.outerContainer}>
@@ -28,9 +24,8 @@ const NoteInput: React.FC<Props> = ({
                 placeholder={placeholder}
                 placeholderTextColor={placeHolderTextColor}
                 multiline={multiline}
-                numberOfLines={numberOfLines}
-                onChangeText={newText => setText(newText)}
-                defaultValue={text}
+                onChangeText={(text) => onChangeText(text)}
+                defaultValue={''}
             />
         </View>
     );

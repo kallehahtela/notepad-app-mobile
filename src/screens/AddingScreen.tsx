@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Alert, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, StyleSheet, Alert, TouchableWithoutFeedback, Keyboard } from "react-native";
 import SelfButton from "../components/SelfButton";
 import NoteInput from "../components/NoteInput";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/StackNavigator";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
-type Props = NativeStackScreenProps<RootStackParamList,'AddingScreen'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'AddingScreen'>;
+type NewNoteRouteProp = RouteProp<RootStackParamList, 'AddingScreen'>;
 
 const AddignScreen = ({ route, navigation }: Props) => {
     const [notes, setNotes] = useState('');
@@ -29,6 +31,7 @@ const AddignScreen = ({ route, navigation }: Props) => {
         }
     };
 
+    // arrow function for handling the AsyncStorage data implementation
     const handleAddNotes = async () => {
         if (!notes.trim()) {
             Alert.alert('You need to add text in the notes in order to add them!')
@@ -47,7 +50,7 @@ const AddignScreen = ({ route, navigation }: Props) => {
             notes.push(newNote);
             await AsyncStorage.setItem('notes', JSON.stringify(notes));
 
-            navigation.navigate('AddingScreen', { newNote })
+            navigation.navigate('HomeScreen', { newNote });
         } catch (error) {
             // error saving note
         }
@@ -64,7 +67,8 @@ const AddignScreen = ({ route, navigation }: Props) => {
                     placeholder="Enter your desired notes here..."
                     placeHolderTextColor="#000"
                     multiline={true}
-                    numberOfLines={10}
+                    value={notes}
+                    onChangeText={setNotes}
                 />
 
                 {/* Custom button with types */}

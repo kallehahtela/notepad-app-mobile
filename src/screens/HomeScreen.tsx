@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from "react-native";
 import { RootStackParamList } from "../navigation/StackNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -37,11 +37,33 @@ const HomeScreen = ({ route, navigation }: Props) => {
         }, [])
     );
 
+    const deleteNote = async (id: string) => {
+        try {
+            const updatedNotes = notes.filter(note => note.id !== id);
+            setNotes(updatedNotes);
+            await AsyncStorage.setItem('notes', JSON.stringify(updatedNotes));
+        } catch (error) {
+            // delete error handler
+        }
+    };
+
+    const confirmDelete = (id: string) => {
+        Alert.alert(
+            'Delete a Note',
+            'Are you sure you want to delete this note?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Delete', style: 'destructive', onPress: () => deleteNote(id) }
+            ],
+            { cancelable: true }
+        );
+    };
+
     return (
         // View for entire space there is
         <View style={styles.outerContainer}>
             {
-                !notes ? (
+                notes.length === 0 ? (
                     <View>
                         <Text style={styles.noNotesText}>
                             Sadly there aren't any notes
@@ -58,6 +80,7 @@ const HomeScreen = ({ route, navigation }: Props) => {
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }) => (
                             <TouchableOpacity
+                                onLongPress={() => confirmDelete(item.id)}
                                 style={styles.noteCard}
                             >
                                 <Text style={styles.noteText}>{item.notes}</Text>

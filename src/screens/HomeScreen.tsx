@@ -16,7 +16,7 @@ type Note = {
 const HomeScreen = ({ route, navigation }: Props) => {
     const [notes, setNotes] = useState<Note[]>([]);
 
-    // fetching notes from AsyncStorage
+    // Function to fecth notes from AsyncStorage
     const fetchNotes = async () => {
         try {
             const storedNotes = await AsyncStorage.getItem('notes');
@@ -26,38 +26,19 @@ const HomeScreen = ({ route, navigation }: Props) => {
                 setNotes([]);
             }
         } catch (error) {
-            // error fetching notes
+            Alert.alert(
+                'Error!',
+                'Failed to load notes.'
+            );
         }
     };
 
-    // fetch notes on mount
+    // Ensure notes refresh when screen is focused
     useFocusEffect(
         React.useCallback(() => {
             fetchNotes();
         }, [])
     );
-
-    const deleteNote = async (id: string) => {
-        try {
-            const updatedNotes = notes.filter(note => note.id !== id);
-            setNotes(updatedNotes);
-            await AsyncStorage.setItem('notes', JSON.stringify(updatedNotes));
-        } catch (error) {
-            // delete error handler
-        }
-    };
-
-    const confirmDelete = (id: string) => {
-        Alert.alert(
-            'Delete a Note',
-            'Are you sure you want to delete this note?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Delete', style: 'destructive', onPress: () => deleteNote(id) }
-            ],
-            { cancelable: true }
-        );
-    };
 
     return (
         // View for entire space there is
@@ -80,7 +61,9 @@ const HomeScreen = ({ route, navigation }: Props) => {
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }) => (
                             <TouchableOpacity
-                                onLongPress={() => confirmDelete(item.id)}
+                                onLongPress={() => navigation.navigate(
+                                    'EditScreen', { id: item.id }
+                                )}
                                 style={styles.noteCard}
                             >
                                 <Text style={styles.noteText}>{item.notes}</Text>

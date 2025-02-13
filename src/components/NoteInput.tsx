@@ -13,8 +13,8 @@ const NoteInput: React.FC<Props> = ({
     placeholder, 
     placeHolderTextColor,
     multiline,
-    onChangeText,
     value,
+    onChangeText,
  }) => {
 
     return (
@@ -24,8 +24,8 @@ const NoteInput: React.FC<Props> = ({
                 placeholder={placeholder}
                 placeholderTextColor={placeHolderTextColor}
                 multiline={multiline}
+                value={value}
                 onChangeText={(text) => onChangeText(text)}
-                defaultValue={''}
             />
         </View>
     );

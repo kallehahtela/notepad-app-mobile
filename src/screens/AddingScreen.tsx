@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Alert, TouchableWithoutFeedback, Keyboard } from "react-native";
-import SelfButton from "../components/SelfButton";
-import NoteInput from "../components/NoteInput";
+
+// Navigation & AsyncStorage
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/StackNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useRoute } from "@react-navigation/native";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'AddingScreen'>;
-type NewNoteRouteProp = RouteProp<RootStackParamList, 'AddingScreen'>;
+// Custom Components
+import SelfButton from "../components/SelfButton";
+import NoteInput from "../components/NoteInput";
 
-const AddignScreen = ({ route, navigation }: Props) => {
+type ScreenProps = NativeStackScreenProps<RootStackParamList, 'AddingScreen'>;
+
+const AddingScreen = ({ route, navigation }: ScreenProps) => {
     const [notes, setNotes] = useState('');
 
     const saveNotesData = async (notes: string) => {
@@ -25,29 +28,40 @@ const AddignScreen = ({ route, navigation }: Props) => {
             };
 
             notes.push(newNote);
-            await AsyncStorage.setItem('notes', JSON.stringify('notes'));
+            await AsyncStorage.setItem('notes', JSON.stringify(notes));
         } catch (error) {
-            // notes saving error
+            Alert.alert(
+                'Saving Error',
+                'issues occured during the data saving'
+            );
         }
     };
 
-    // arrow function for handling the AsyncStorage data implementation
+    // Function to Handle 'Add Note' Button Press
     const handleAddNotes = async () => {
+        // Check if the user entered text
         if (!notes.trim()) {
             Alert.alert('You need to add text in the notes in order to add them!')
             return;
         }
 
+        // Create a New Note Object
         const newNote = {
+            // Generates a unique ID
             id: Date.now().toString(),
+            // Stores the user's note and timestamp
             notes,
             createdAt: new Date().toString(),
         };
 
+        // Retrieve Previous Notes & Save
         try {
+            // Get stored notes from AsyncStorage.
             const previousNotes = await AsyncStorage.getItem('notes');
             const notes = previousNotes ?  JSON.parse(previousNotes) : [];
+            // Add the new note to the array.
             notes.push(newNote);
+            // Save it back to AsyncStorage.
             await AsyncStorage.setItem('notes', JSON.stringify(notes));
 
             navigation.navigate('HomeScreen', { newNote });
@@ -81,7 +95,7 @@ const AddignScreen = ({ route, navigation }: Props) => {
     );
 }
 
-export default AddignScreen;
+export default AddingScreen;
 
 const styles = StyleSheet.create({
     outerContainer: {

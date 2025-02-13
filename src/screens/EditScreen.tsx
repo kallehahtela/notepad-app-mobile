@@ -85,7 +85,10 @@ const EditScreen = () => {
                 }
 
                 // Navigates back to HomeScreen with the updated note
-                navigation.navigate('HomeScreen', { updatedNote: notesArray[noteIndex] });
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Tabs', params: { updatedNote: notesArray[noteIndex] } }],
+                });
             }
         } catch (error) {
             Alert.alert('Error!', 'Could not update note.');
@@ -122,7 +125,10 @@ const EditScreen = () => {
                                     JSON.stringify(filteredNotes)
                                 );
                                 // Navigates back to HomeScreen
-                                navigation.navigate('Tabs', { deleted: true });
+                                navigation.reset({
+                                    index: 0,
+                                    routes: [{ name: 'Tabs' }]
+                                });
                             }
                         } catch (error) {
                             Alert.alert(

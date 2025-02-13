@@ -7,7 +7,11 @@ import EditScreen from '../screens/EditScreen';
 
 export type RootStackParamList = {
     Tabs: undefined;
-    HomeScreen: undefined;
+    HomeScreen: { newNote: { 
+        id: string;
+        notes: string;
+        createdAt: string
+    }} | undefined;
     AddingScreen: undefined;
     EditScreen: { id: string };
 };
@@ -50,7 +54,8 @@ const RootStack = () => {
                 name='EditScreen'
                 component={EditScreen}
                 options={{
-                    title: 'Edit a Note'
+                    title: 'Edit a Note',
+                    headerBackTitle: 'Your notes'
                 }}
             />
         </Stack.Navigator>

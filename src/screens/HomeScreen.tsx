@@ -61,7 +61,7 @@ const HomeScreen = ({ route, navigation }: Props) => {
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }) => (
                             <TouchableOpacity
-                                onLongPress={() => navigation.navigate(
+                                onPress={() => navigation.navigate(
                                     'EditScreen', { id: item.id }
                                 )}
                                 style={styles.noteCard}
